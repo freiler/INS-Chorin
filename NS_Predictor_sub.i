@@ -32,7 +32,7 @@
 
     [./InitialCondition]
       type = ConstantIC
-      value = 0.0
+      value = 0.05
     [../]
   [../]
 []

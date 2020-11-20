@@ -24,6 +24,7 @@ NavStokesCorrector_p::validParams()
   params.addCoupledVar("v_star", "star y-velocity"); // only required in 2D and 3D
   params.addCoupledVar("w_star", "star z-velocity"); // only required in 3D
   params.addRequiredCoupledVar("p", "pressure");
+  params.addRequiredCoupledVar("p_old", "pressure previous timestep");
 
   // Required parameters
   params.addRequiredParam<unsigned>(
@@ -46,7 +47,7 @@ NavStokesCorrector_p::NavStokesCorrector_p(const InputParameters & parameters)
 
     // Pressure at previous time num_steps
     _grad_p(coupledGradient("p")),
-    _grad_p_old(coupledGradientOlder("p")),
+    _grad_p_old(coupledGradient("p_old")),
 
     // Variable numberings
     _u_vel_star_var_number(coupled("u_star")),

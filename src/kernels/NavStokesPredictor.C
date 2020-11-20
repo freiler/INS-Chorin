@@ -94,11 +94,15 @@ NavStokesPredictor::computeQpResidual()
   Real symmetric_part = (U(_component) - U_old(_component)) * _test[_i][_qp];
 
   // Convective part.  Remember to multiply by _dt!
+  //RealVectorValue u_grad_u(U_old * _grad_u_vel_star[_qp], U_old * _grad_v_vel_star[_qp], U_old * _grad_w_vel_star[_qp]);
+
   Real convective_part = _dt * (grad_U * U_old) * test;
+  //Real convective_part = _dt * u_grad_u(_component) * _test[_i][_qp];
 
   // Viscous part - we are using the Laplacian form here for simplicity.
   // Remember to multiply by _dt!
-  Real viscous_part = _dt * (_mu[_qp] / _rho[_qp]) * grad_U.contract(grad_test);
+  //Real viscous_part = _dt * (_mu[_qp] / _rho[_qp]) * grad_U.contract(grad_test);
+  Real viscous_part = _dt * (_mu[_qp] / _rho[_qp]) * (_grad_u[_qp] * _grad_test[_i][_qp]);
 
   return symmetric_part + convective_part + viscous_part;
 }

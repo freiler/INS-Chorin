@@ -182,7 +182,7 @@
     type = GenericConstantMaterial
     block = 'FLUID'
     prop_names = 'rho mu'
-    prop_values = '1  0.0004'
+    prop_values = '1  0.002'
   [../]
 []
 
@@ -197,9 +197,9 @@
 [Executioner]
   type = Transient
   # scheme = bdf2
-  num_steps = 50
-  dt = .1
-  dtmin = .1
+  num_steps = 4
+  dt = .2
+  dtmin = .2
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   #petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'

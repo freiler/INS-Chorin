@@ -57,7 +57,7 @@
 
     [./InitialCondition]
       type = ConstantIC
-      value = 0.0
+      value = 0.05
     [../]
   [../]
 
@@ -96,6 +96,7 @@
     u_star = u_star
     v_star = v_star
     p = p
+    p_old = p_old
     component = 0
   [../]
 
@@ -105,19 +106,20 @@
     u_star = u_star
     v_star = v_star
     p = p
+    p_old = p_old
     component = 1
   [../]
 []
 
 [AuxKernels]
-  [./normalization_auxkernel]
-    type = NormalizationAuxOld
-    variable = p_old
-    source_variable = p
-    normal_factor = 1.0
-    execute_on = timestep_end
-    # Note: 'normalization' or 'shift' are provided as CLI args
-  [../]
+  #[./normalization_auxkernel]
+  #  type = NormalizationAuxOlder
+  #  variable = p_old
+  #  source_variable = p
+  #  normal_factor = 1.0
+  #  execute_on = timestep_end
+  #  # Note: 'normalization' or 'shift' are provided as CLI args
+  #[../]
 
   [./normalization_auxkernel2]
     type = NormalizationAux

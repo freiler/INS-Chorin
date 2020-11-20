@@ -47,7 +47,7 @@
 
     [./InitialCondition]
       type = ConstantIC
-      value = 0.0
+      value = 0.05
     [../]
   [../]
 
@@ -146,7 +146,7 @@
 
 [Executioner]
   type = Transient
-  num_steps =50
+  num_steps =8
   dt = .2
   dtmin = .2
   petsc_options_iname = '-pc_type'
@@ -240,13 +240,13 @@
     variable = p
   [../]
 
-  [./p_old_to_sub_predictor]
-    type = MultiAppCopyTransfer_old
-    direction = to_multiapp
-    multi_app = sub_predictor
-    source_variable = p_old
-    variable = p
-  [../]
+  #[./p_old_to_sub_predictor]
+  #  type = MultiAppCopyTransfer_old
+  #  direction = to_multiapp
+  #  multi_app = sub_predictor
+  #  source_variable = p_old
+  #  variable = p
+  #[../]
 
   [./p_to_sub_corrector]
     type = MultiAppCopyTransfer
@@ -254,6 +254,14 @@
     multi_app = sub_corrector
     source_variable = p
     variable = p
+  [../]
+
+  [./p_old_to_sub_corrector]
+    type = MultiAppCopyTransfer
+    direction = to_multiapp
+    multi_app = sub_corrector
+    source_variable = p_old
+    variable = p_old
   [../]
 
   [./u_star_to_sub_corrector]
