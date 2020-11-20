@@ -134,7 +134,7 @@
 [Executioner]
   type = Transient
   # scheme = bdf2
-  num_steps = 1
+  num_steps = 75
   dt = .2
   dtmin = .2
   petsc_options_iname = '-pc_type'

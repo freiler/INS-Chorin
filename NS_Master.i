@@ -146,9 +146,9 @@
 
 [Executioner]
   type = Transient
-  num_steps =8
-  dt = .2
-  dtmin = .2
+  num_steps =320
+  dt = .025
+  dtmin = .025
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   #petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'

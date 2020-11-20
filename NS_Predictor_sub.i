@@ -179,7 +179,8 @@
   [./SMP]
     type = SMP
     full = true
-    solve_type = 'NEWTON'
+    #solve_type = 'NEWTON'
+    solve_type = 'LINEAR'
   [../]
 []
 
@@ -188,11 +189,20 @@
   #num_steps = 10
   #dt = .1
   #dtmin = .1
+
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
-  #petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'
+
+  #petsc_options_iname = '-ksp_gmres_restart -pc_type -sub_pc_type -sub_pc_factor_levels'
+  #petsc_options_value = '300                bjacobi  ilu          4'
+
+  #petsc_options_iname = '-pc_type'    # Option 1
+  #petsc_options_value = 'lu'
+
+  #petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'   #Option 2
   #petsc_options_value = 'asm      2               ilu          4'
   #line_search = 'none'
+
   nl_rel_tol = 1e-7
   nl_abs_tol = 1e-8
   nl_max_its = 40
