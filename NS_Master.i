@@ -132,7 +132,7 @@
     type = GenericConstantMaterial
     block = 'FLUID'
     prop_names = 'rho mu'
-    prop_values = '1  0.002'
+    prop_values = '1  0.0004'
   [../]
 []
 
@@ -140,15 +140,16 @@
   [./SMP]
     type = SMP
     full = true
-    solve_type = 'NEWTON'
+    #solve_type = 'NEWTON'
+    solve_type = 'LINEAR'
   [../]
 []
 
 [Executioner]
   type = Transient
-  num_steps =320
-  dt = .025
-  dtmin = .025
+  num_steps =1000
+  dt = .005
+  dtmin = .005
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   #petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'

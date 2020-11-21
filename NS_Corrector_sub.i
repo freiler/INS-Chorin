@@ -113,7 +113,7 @@
 
 [AuxKernels]
   #[./normalization_auxkernel]
-  #  type = NormalizationAuxOlder
+  #  type = NormalizationAuxOld
   #  variable = p_old
   #  source_variable = p
   #  normal_factor = 1.0
@@ -166,7 +166,7 @@
     type = GenericConstantMaterial
     block = 'FLUID'
     prop_names = 'rho mu'
-    prop_values = '1  0.002'
+    prop_values = '1  0.0004'
   [../]
 []
 
@@ -174,7 +174,8 @@
   [./SMP]
     type = SMP
     full = true
-    solve_type = 'NEWTON'
+    #solve_type = 'NEWTON'
+    solve_type = 'LINEAR'
   [../]
 []
 

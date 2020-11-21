@@ -99,16 +99,16 @@ NavStokesPredictor_p::computeQpResidual()
   Real time_derivative = (U(_component) - U_old(_component)) * _test[_i][_qp];
 
   // Convective part.  Remember to multiply by _dt!
-  Real convective_part = _dt * (grad_U * U_old) * test;
+  Real convective_part =  (grad_U * U_old) * test;
 
   // Pressure Gradients
-  Real pressure_gradient = (_dt / _rho[_qp]) * _grad_p_old[_qp](_component) * _test[_i][_qp];
+  Real pressure_gradient = (1 / _rho[_qp]) * _grad_p_old[_qp](_component) * _test[_i][_qp];
 
   // Viscous part - we are using the Laplacian form here for simplicity.
   // Remember to multiply by _dt!
-  Real viscous_part = _dt * (_mu[_qp] / _rho[_qp]) * grad_U.contract(grad_test);
+  Real viscous_part =  (_mu[_qp] / _rho[_qp]) * grad_U.contract(grad_test);
 
-  return time_derivative + convective_part + viscous_part + pressure_gradient;
+  return time_derivative + (convective_part + viscous_part + pressure_gradient) * _dt;
 }
 
 Real

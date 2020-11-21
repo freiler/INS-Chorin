@@ -114,7 +114,7 @@
     type = ADGenericConstantMaterial
     block = 'FLUID'
     prop_names = 'rho mu'
-    prop_values = '1  0.002'
+    prop_values = '1  0.0004'
   [../]
   [ins_mat]
     type = INSADMaterial
@@ -134,9 +134,9 @@
 [Executioner]
   type = Transient
   # scheme = bdf2
-  num_steps = 75
-  dt = .2
-  dtmin = .2
+  num_steps = 1
+  dt = .1
+  dtmin = .1
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   #petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'
