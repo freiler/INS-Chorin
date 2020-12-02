@@ -2,7 +2,7 @@
   second_order = true
   [fmg]
     type = FileMeshGenerator
-    file = exodus.exo
+    file = Re500CoarseMesh.exo
   []
 []
 #[Mesh]
@@ -164,7 +164,7 @@
 [Materials]
   [./const]
     type = GenericConstantMaterial
-    block = 'FLUID'
+    block = 'SOLID'
     prop_names = 'rho mu'
     prop_values = '1  0.0004'
   [../]
@@ -181,13 +181,13 @@
 
 [Executioner]
   type = Transient
-  #num_steps = 10
+  #num_steps = 50
   #dt = .1
   #dtmin = .1
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
-  #petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'
-  #petsc_options_value = 'asm      2               ilu          4'
+
+  #petsc_options_iname = '-pc_type'
+  #petsc_options_value = 'lu'
+
   #line_search = 'none'
   nl_rel_tol = 1e-7
   nl_abs_tol = 1e-8

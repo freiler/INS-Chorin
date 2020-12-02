@@ -2,7 +2,7 @@
   second_order = true
   [fmg]
     type = FileMeshGenerator
-    file = exodus.exo
+    file = Re500CoarseMesh.exo
   []
 []
 #[Mesh]
@@ -169,7 +169,7 @@
 [Materials]
   [./const]
     type = GenericConstantMaterial
-    block = 'FLUID'
+    block = 'SOLID'
     prop_names = 'rho mu'
     prop_values = '1  0.0004'
   [../]
@@ -186,32 +186,35 @@
 
 [Executioner]
   type = Transient
-  #num_steps = 10
+  #num_steps = 50
   #dt = .1
   #dtmin = .1
 
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
+  #petsc_options_iname = '-pc_type'
+  #petsc_options_value = 'lu'
 
   #petsc_options_iname = '-ksp_gmres_restart -pc_type -sub_pc_type -sub_pc_factor_levels'
   #petsc_options_value = '300                bjacobi  ilu          4'
 
-  #petsc_options_iname = '-pc_type'    # Option 1
-  #petsc_options_value = 'lu'
+  #petsc_options_iname = '-ksp_type -pc_type -sub_pc_type -snes_max_it -sub_pc_factor_shift_type -pc_asm_overlap -snes_atol -snes_rtol '
+  #petsc_options_value = 'gmres asm lu 100 NONZERO 2 1E-14 1E-12'
 
-  #petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'   #Option 2
-  #petsc_options_value = 'asm      2               ilu          4'
+  #petsc_options_iname = '-ksp_type -pc_type -pc_sub_type -sub_pc_factor_levels'
+  #petsc_options_value = 'gmres asm ilu 4'
+
+  petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'   #Option 2
+  petsc_options_value = 'asm      2               ilu          4'
   #line_search = 'none'
 
-  nl_rel_tol = 1e-7
-  nl_abs_tol = 1e-8
+  nl_rel_tol = 1e-8
+  nl_abs_tol = 1e-9
   nl_max_its = 40
-  l_tol = 1e-6
+  l_tol = 1e-8
   l_max_its = 500
 []
 
-[Outputs]
-  file_base = NACA_airfoil_Pred
-  exodus = true
-  checkpoint = true
-[]
+#[Outputs]
+#  file_base = NACA_airfoil_Pred
+#  exodus = true
+#  checkpoint = true
+#[]

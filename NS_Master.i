@@ -2,7 +2,7 @@
   second_order = true
   [fmg]
     type = FileMeshGenerator
-    file = exodus.exo
+    file = Re500CoarseMesh.exo
   []
 []
 #[Mesh]
@@ -130,7 +130,7 @@
 [Materials]
   [./const]
     type = GenericConstantMaterial
-    block = 'FLUID'
+    block = 'SOLID'
     prop_names = 'rho mu'
     prop_values = '1  0.0004'
   [../]
@@ -147,13 +147,19 @@
 
 [Executioner]
   type = Transient
-  num_steps =1000
+  num_steps = 1000
   dt = .005
   dtmin = .005
+
+  #petsc_options_iname = '-pc_type -pc_hypre_type -pc_hypre_boomeramg_max_iter'
+  #petsc_options_value = 'hypre boomeramg 6'
+
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
+
   #petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'
   #petsc_options_value = 'asm      2               ilu          4'
+
   #line_search = 'none'
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-9
@@ -163,11 +169,11 @@
   picard_max_its = 1
 []
 
-[Outputs]
-  file_base = NACA_airfoil_PP
-  exodus = true
-  checkpoint = true
-[]
+#[Outputs]
+#  file_base = NACA_airfoil_PP
+#  exodus = true
+#  checkpoint = true
+#[]
 
 [MultiApps]
   [./sub_predictor]
