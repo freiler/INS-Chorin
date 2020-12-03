@@ -2,7 +2,7 @@
   second_order = true
   [fmg]
     type = FileMeshGenerator
-    file = Re500CoarseMesh.exo
+    file = AirfoilMeshes/Re500CoarseMesh.exo
   []
 []
 
