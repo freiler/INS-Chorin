@@ -2,7 +2,7 @@
   second_order = true
   [fmg]
     type = FileMeshGenerator
-    file = Re500CoarseMesh.exo
+    file = BFSMeshes/exodus.exo   #Mesh is in mm! REMEMBER
   []
 []
 #[Mesh]
@@ -18,13 +18,24 @@
 
     [./InitialCondition]
       type = ConstantIC
-      value = 1.0
+      value = 100.0
     [../]
   [../]
   [./v]
     order = SECOND
     family = LAGRANGE
     #initial_from_file_var = v
+    #initial_from_file_timestep = LATEST
+
+    [./InitialCondition]
+      type = ConstantIC
+      value = 0.0
+    [../]
+  [../]
+  [./w]
+    order = SECOND
+    family = LAGRANGE
+    #initial_from_file_var = w
     #initial_from_file_timestep = LATEST
 
     [./InitialCondition]
@@ -44,11 +55,11 @@
 
     [./InitialCondition]
       type = ConstantIC
-      value = 1.0
+      value = 100.0
     [../]
   [../]
 
-  # y-star velocity
+  # v-star velocity
   [./v_star]
     order = SECOND
     family = LAGRANGE
@@ -57,7 +68,20 @@
 
     [./InitialCondition]
       type = ConstantIC
-      value = 0.05
+      value = 0.0
+    [../]
+  [../]
+
+  # w-star velocity
+  [./w_star]
+    order = SECOND
+    family = LAGRANGE
+    #initial_from_file_var = w_star
+    #initial_from_file_timestep = LATEST
+
+    [./InitialCondition]
+      type = ConstantIC
+      value = 0.0
     [../]
   [../]
 
@@ -95,6 +119,7 @@
     variable = u
     u_star = u_star
     v_star = v_star
+    w_star = w_star
     p = p
     p_old = p_old
     component = 0
@@ -105,22 +130,25 @@
     variable = v
     u_star = u_star
     v_star = v_star
+    w_star = w_star
     p = p
     p_old = p_old
     component = 1
   [../]
+
+  [./z_corrector]
+    type = NavStokesCorrector_p
+    variable = w
+    u_star = u_star
+    v_star = v_star
+    w_star = w_star
+    p = p
+    p_old = p_old
+    component = 2
+  [../]
 []
 
 [AuxKernels]
-  #[./normalization_auxkernel]
-  #  type = NormalizationAuxOld
-  #  variable = p_old
-  #  source_variable = p
-  #  normal_factor = 1.0
-  #  execute_on = timestep_end
-  #  # Note: 'normalization' or 'shift' are provided as CLI args
-  #[../]
-
   [./normalization_auxkernel2]
     type = NormalizationAux
     variable = p_current
@@ -135,22 +163,29 @@
   [./x_no_slip]
     type = DirichletBC
     variable = u
-    boundary = 'WALL AIRFOIL'
+    boundary = 'WALL'
     value = 0.0
   [../]
 
   [./y_no_slip]
     type = DirichletBC
     variable = v
-    boundary = 'WALL AIRFOIL'
+    boundary = 'WALL'
+    value = 0.0
+  [../]
+
+  [./z_no_slip]
+    type = DirichletBC
+    variable = w
+    boundary = 'WALL'
     value = 0.0
   [../]
 
   [./velocity_inlet_x]
-    type = DirichletBC
+    type = FunctionDirichletBC
     variable = u
     boundary = 'INLET'
-    value = 1.0
+    function = 'Inlet_Function'
   []
 
   [./velocity_inlet_y]
@@ -159,14 +194,30 @@
     boundary = 'INLET'
     value = 0.0
   []
+
+  [./velocity_inlet_z]
+    type = DirichletBC
+    variable = w
+    boundary = 'INLET'
+    value = 0.0
+  []
 []
 
 [Materials]
   [./const]
     type = GenericConstantMaterial
-    block = 'SOLID'
+    block = 'FLUID'
     prop_names = 'rho mu'
-    prop_values = '1  0.0004'
+    prop_values = '1  14.8'
+  [../]
+[]
+
+[Functions]
+  [./Inlet_Function]
+    type = ParsedFunction
+    value = '872.75*( (1 - (cosh(pi*z/5.2))/(cosh(pi*90/5.2)))*(cos(pi*(y-7.5)/5.2)) -
+                      (1 - (cosh(3*pi*z/5.2))/(cosh(3*pi*90/5.2)))*(cos(3*pi*(y-7.5)/5.2))/(3^3) +
+                      (1 - (cosh(5*pi*z/5.2))/(cosh(5*pi*90/5.2)))*(cos(5*pi*(y-7.5)/5.2))/(5^3) )'
   [../]
 []
 
@@ -197,7 +248,7 @@
 []
 
 [Outputs]
-  file_base = NACA_airfoil_Corr
+  file_base = BFS_Results_Corr
   exodus = true
   checkpoint = true
 []

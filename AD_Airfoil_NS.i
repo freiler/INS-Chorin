@@ -2,7 +2,31 @@
   second_order = true
   [fmg]
     type = FileMeshGenerator
-    file = BFSMeshes/exodus.exo   #Mesh is in mm! REMEMBER
+    file = AirfoilMeshes/Re100CoarseMesh.exo
+  []
+[]
+
+[AuxVariables]
+  [vel_x]
+    order = SECOND
+  []
+  [vel_y]
+    order = SECOND
+  []
+[]
+
+[AuxKernels]
+  [vel_x]
+    type = VectorVariableComponentAux
+    variable = vel_x
+    vector_variable = velocity
+    component = 'x'
+  []
+  [vel_y]
+    type = VectorVariableComponentAux
+    variable = vel_y
+    vector_variable = velocity
+    component = 'y'
   []
 []
 
@@ -22,9 +46,8 @@
   [./velocity]
     type = VectorConstantIC
     variable = velocity
-    x_value = 100   #mm/s, max velocity is ~800mm/s
+    x_value = 1
     y_value = 0
-    z_value = 0
   [../]
   [./p]
     type = ConstantIC
@@ -35,12 +58,12 @@
 
 [Kernels]
   [./mass]
-    type = INSADMass
+    type = INSADMass   #INSMass
     variable = p
   [../]
 
   [./momentum_time]
-    type = INSADMomentumTimeDerivative
+    type = INSADMomentumTimeDerivative #INSMomentumTimeDerivative
     variable = velocity
   [../]
 
@@ -50,7 +73,7 @@
   [../]
 
   [./momentum_viscous]
-    type = INSADMomentumViscous
+    type = INSADMomentumViscous #INSMomentumLaplaceForm
     variable = velocity
     viscous_form = 'traction'
   [../]
@@ -67,16 +90,15 @@
   [./no_slip]
     type = VectorFunctionDirichletBC
     variable = velocity
-    boundary = 'WALL'
+    boundary = 'WALL AIRFOIL'
   [../]
 
   [./velocity_inlet]
     type = VectorFunctionDirichletBC
     variable = velocity
     boundary = 'INLET'
-    function_x = 'Inlet_Function'
+    function_x = 1.0
     function_y = 0.0
-    function_z = 0.0
   []
 
   [./pressure_outlet]
@@ -90,23 +112,15 @@
 [Materials]
   [./const]
     type = ADGenericConstantMaterial
+    #block = 'SOLID'
     block = 'FLUID'
     prop_names = 'rho mu'
-    prop_values = '1  14.8'
+    prop_values = '1  0.002'
   [../]
   [ins_mat]
     type = INSADMaterial
     velocity = velocity
     pressure = p
-  [../]
-[]
-
-[Functions]
-  [./Inlet_Function]
-    type = ParsedFunction
-    value = '872.75*( (1 - (cosh(pi*z/5.2))/(cosh(pi*90/5.2)))*(cos(pi*(y-7.5)/5.2)) -
-                      (1 - (cosh(3*pi*z/5.2))/(cosh(3*pi*90/5.2)))*(cos(3*pi*(y-7.5)/5.2))/(3^3) +
-                      (1 - (cosh(5*pi*z/5.2))/(cosh(5*pi*90/5.2)))*(cos(5*pi*(y-7.5)/5.2))/(5^3) )'
   [../]
 []
 
@@ -121,15 +135,12 @@
 [Executioner]
   type = Transient
   # scheme = bdf2
-  num_steps = 1
-  dt = .001
-  dtmin = .001
+  num_steps = 50
+  dt = .1
+  dtmin = .1
 
-  #petsc_options_iname = '-pc_type'
-  #petsc_options_value = 'lu'
-
-  petsc_options_iname = '-pc_type -sub_pc_type -sub_pc_factor_shift_type'
-  petsc_options_value = 'asm         lu                    NONZERO'
+  petsc_options_iname = '-pc_type'
+  petsc_options_value = 'lu'
 
   #petsc_options_iname = '-ksp_type -pc_type -sub_pc_type -snes_max_it -sub_pc_factor_shift_type -pc_asm_overlap -snes_atol -snes_rtol '
   #petsc_options_value = 'gmres asm lu 100 NONZERO 2 1E-14 1E-12'
@@ -146,6 +157,6 @@
 []
 
 [Outputs]
-  file_base = BFS_results
+  file_base = NACA_airfoil
   exodus = true
 []

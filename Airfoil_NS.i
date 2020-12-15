@@ -2,38 +2,19 @@
   second_order = true
   [fmg]
     type = FileMeshGenerator
-    file = AirfoilMeshes/Re500CoarseMesh.exo
-  []
-[]
-
-[AuxVariables]
-  [vel_x]
-    order = SECOND
-  []
-  [vel_y]
-    order = SECOND
-  []
-[]
-
-[AuxKernels]
-  [vel_x]
-    type = VectorVariableComponentAux
-    variable = vel_x
-    vector_variable = velocity
-    component = 'x'
-  []
-  [vel_y]
-    type = VectorVariableComponentAux
-    variable = vel_y
-    vector_variable = velocity
-    component = 'y'
+    file = Mesh3.exo
   []
 []
 
 [Variables]
-  [./velocity]
+  [./vel_x]
     order = SECOND
-    family = LAGRANGE_VEC
+    family = LAGRANGE
+  [../]
+
+  [./vel_y]
+    order = SECOND
+    family = LAGRANGE
   [../]
 
   [./p]
@@ -43,11 +24,15 @@
 []
 
 [ICs]
-  [./velocity]
-    type = VectorConstantIC
-    variable = velocity
-    x_value = 1
-    y_value = 0
+  [./x_velocity]
+    type = ConstantIC
+    variable = vel_x
+    value = 1.0
+  [../]
+  [./y_velocity]
+    type = ConstantIC
+    variable = vel_y
+    value = 0.0
   [../]
   [./p]
     type = ConstantIC
@@ -58,48 +43,66 @@
 
 [Kernels]
   [./mass]
-    type = INSADMass
+    type = INSMass
     variable = p
-  [../]
-
-  [./momentum_time]
-    type = INSADMomentumTimeDerivative
-    variable = velocity
-  [../]
-
-  [./momentum_convection]
-    type = INSADMomentumAdvection
-    variable = velocity
-  [../]
-
-  [./momentum_viscous]
-    type = INSADMomentumViscous
-    variable = velocity
-    viscous_form = 'traction'
-  [../]
-
-  [./momentum_pressure]
-    type = INSADMomentumPressure
-    variable = velocity
+    u = vel_x
+    v = vel_y
     p = p
-    integrate_p_by_parts = false
+  [../]
+
+  [./x_momentum_time]
+    type = INSMomentumTimeDerivative
+    variable = vel_x
+  [../]
+  [./y_momentum_time]
+    type = INSMomentumTimeDerivative
+    variable = vel_y
+  [../]
+
+  [./x_momentum_space]
+    type = INSMomentumLaplaceForm
+    variable = vel_x
+    u = vel_x
+    v = vel_y
+    p = p
+    component = 0
+  [../]
+  [./y_momentum_space]
+    type = INSMomentumLaplaceForm
+    variable = vel_y
+    u = vel_x
+    v = vel_y
+    p = p
+    component = 1
   [../]
 []
 
 [BCs]
-  [./no_slip]
-    type = VectorFunctionDirichletBC
-    variable = velocity
+  [./x_no_slip]
+    type = DirichletBC
+    variable = vel_x
     boundary = 'WALL AIRFOIL'
+    value = 0.0
+  [../]
+  [./y_no_slip]
+    type = DirichletBC
+    variable = vel_y
+    boundary = 'WALL AIRFOIL'
+    value = 0.0
   [../]
 
-  [./velocity_inlet]
-    type = VectorFunctionDirichletBC
-    variable = velocity
+  [./x_inlet]
+    type = DirichletBC
+    variable = vel_x
     boundary = 'INLET'
-    function_x = 1.0
-    function_y = 0.0
-  []
+    value = 1.0
+  [../]
+  [./y_inlet]
+    type = DirichletBC
+    variable = vel_y
+    boundary = 'INLET'
+    value = 0.0
+  [../]
 
   [./pressure_outlet]
     type = DirichletBC
@@ -111,16 +114,11 @@
 
 [Materials]
   [./const]
-    type = ADGenericConstantMaterial
-    block = 'SOLID'
+    type = GenericConstantMaterial
     #block = 'FLUID'
+    block = 'SOLID'
     prop_names = 'rho mu'
     prop_values = '1  0.0004'
-  [../]
-  [ins_mat]
-    type = INSADMaterial
-    velocity = velocity
-    pressure = p
   [../]
 []
 
@@ -142,8 +140,8 @@
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
 
-  #petsc_options_iname = '-ksp_type -pc_type -sub_pc_type -snes_max_it -sub_pc_factor_shift_type -pc_asm_overlap -snes_atol -snes_rtol '
-  #petsc_options_value = 'gmres asm lu 100 NONZERO 2 1E-14 1E-12'
+  #petsc_options_iname = '-ksp_type -ksp_gmres_restart -pc_type -sub_pc_type -snes_max_it -sub_pc_factor_shift_type -pc_asm_overlap -snes_atol -snes_rtol '
+  #petsc_options_value = 'gmres 30 asm lu 100 NONZERO 2 1E-14 1E-12'
 
   #petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'
   #petsc_options_value = 'asm      2               ilu          4'

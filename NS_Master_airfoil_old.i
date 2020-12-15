@@ -2,7 +2,7 @@
   second_order = true
   [fmg]
     type = FileMeshGenerator
-    file = Mesh3.exo
+    file = AirfoilMeshes/Re100MediumMesh.exo
   []
 []
 #[Mesh]
@@ -53,7 +53,7 @@
 
   [./u]
     order = SECOND
-    family = L2_LAGRANGE
+    family = LAGRANGE
     #initial_from_file_var = u
     #initial_from_file_timestep = LATEST
 
@@ -64,7 +64,7 @@
   [../]
   [./v]
     order = SECOND
-    family = L2_LAGRANGE
+    family = LAGRANGE
     #initial_from_file_var = v
     #initial_from_file_timestep = LATEST
 
@@ -99,24 +99,23 @@
 []
 
 [AuxKernels]
-  [corrector_x]
-    type = Corrector
-    variable = u
+  [./normalization_auxkernel]
+    type = NormalizationAuxOld
+    variable = p_old
+    source_variable = p
+    normal_factor = 1.0
     execute_on = timestep_end
-    p = p
-    u_star = u_star
-    v_star = v_star
-    component = 0
-  []
-  [corrector_y]
-    type = Corrector
-    variable = v
+    # Note: 'normalization' or 'shift' are provided as CLI args
+  [../]
+
+  [./normalization_auxkernel2]
+    type = NormalizationAux
+    variable = p_current
+    source_variable = p
+    normal_factor = 1.0
     execute_on = timestep_end
-    p = p
-    u_star = u_star
-    v_star = v_star
-    component = 1
-  []
+    # Note: 'normalization' or 'shift' are provided as CLI args
+  [../]
 []
 
 [BCs]
@@ -131,10 +130,9 @@
 [Materials]
   [./const]
     type = GenericConstantMaterial
-    #block = 'FLUID'
-    block = 'SOLID'
+    block = 'FLUID'
     prop_names = 'rho mu'
-    prop_values = '1  0.0004'  #Re 100 : 0.002; Re 500 : 0.0004
+    prop_values = '1  0.002'
   [../]
 []
 
@@ -149,19 +147,15 @@
 
 [Executioner]
   type = Transient
-  num_steps = 700
-  dt = .007143
-  dtmin = .007143
-
-  petsc_options_iname = '-pc_type -pc_hypre_type -pc_hypre_boomeramg_max_iter' #USED FOR RE 100
+  num_steps =75
+  dt = .0667
+  dtmin = .0667
+  petsc_options_iname = '-pc_type -pc_hypre_type -pc_hypre_boomeramg_max_iter'
   petsc_options_value = 'hypre boomeramg 6'
-
-  #petsc_options_iname = '-pc_type' 
+  #petsc_options_iname = '-pc_type'
   #petsc_options_value = 'lu'
-
   #petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'
   #petsc_options_value = 'asm      2               ilu          4'
-
   #line_search = 'none'
   nl_rel_tol = 1e-8
   nl_abs_tol = 1e-9
@@ -171,11 +165,22 @@
   picard_max_its = 1
 []
 
+#[Outputs]
+#  file_base = NACA_airfoil_PP
+#  exodus = true
+#  checkpoint = true
+#[]
+
 [MultiApps]
   [./sub_predictor]
     type = TransientMultiApp
-    input_files = NS_Predictor_airfoil.i
+    input_files = NS_Predictor_airfoil_old.i
     execute_on = TIMESTEP_BEGIN
+  [../]
+  [./sub_corrector]
+    type = TransientMultiApp
+    input_files = NS_Corrector_airfoil_old.i
+    execute_on = TIMESTEP_END
   [../]
 []
 
@@ -194,6 +199,22 @@
     multi_app = sub_predictor
     source_variable = v_star
     variable = v_star
+  [../]
+
+  [./u_from_sub_corrector]
+    type = MultiAppCopyTransfer
+    direction = from_multiapp
+    multi_app = sub_corrector
+    source_variable = u
+    variable = u
+  [../]
+
+  [./v_from_sub_corrector]
+    type = MultiAppCopyTransfer
+    direction = from_multiapp
+    multi_app = sub_corrector
+    source_variable = v
+    variable = v
   [../]
 
   [./u_to_sub_predictor]
@@ -221,10 +242,45 @@
     source_variable = p
     variable = p
   [../]
-[]
 
-[Outputs]
-  file_base = NACA_airfoil_Chorin
-  exodus = true
-  checkpoint = true
+  #[./p_old_to_sub_predictor]
+  #  type = MultiAppCopyTransfer_old
+  #  direction = to_multiapp
+  #  multi_app = sub_predictor
+  #  source_variable = p_old
+  #  variable = p
+  #[../]
+
+  [./p_to_sub_corrector]
+    type = MultiAppCopyTransfer
+    direction = to_multiapp
+    multi_app = sub_corrector
+    source_variable = p
+    variable = p
+  [../]
+
+  [./p_old_to_sub_corrector]
+    type = MultiAppCopyTransfer
+    direction = to_multiapp
+    multi_app = sub_corrector
+    source_variable = p_old
+    variable = p_old
+  [../]
+
+  [./u_star_to_sub_corrector]
+    type = MultiAppCopyTransfer
+    direction = to_multiapp
+    multi_app = sub_corrector
+    source_variable = u_star
+    variable = u_star
+  [../]
+
+  [./v_star_to_sub_corrector]
+    type = MultiAppCopyTransfer
+    direction = to_multiapp
+    multi_app = sub_corrector
+    source_variable = v_star
+    variable = v_star
+  [../]
+
 []
