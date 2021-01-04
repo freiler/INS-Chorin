@@ -172,7 +172,7 @@
     #block = 'FLUID'
     block = 'SOLID'
     prop_names = 'rho mu'
-    prop_values = '1  0.0004'
+    prop_values = '1  0.002'
   [../]
 []
 

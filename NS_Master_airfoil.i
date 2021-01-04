@@ -134,7 +134,7 @@
     #block = 'FLUID'
     block = 'SOLID'
     prop_names = 'rho mu'
-    prop_values = '1  0.0004'  #Re 100 : 0.002; Re 500 : 0.0004
+    prop_values = '1  0.002'  #Re 100 : 0.002; Re 500 : 0.0004
   [../]
 []
 
@@ -149,14 +149,14 @@
 
 [Executioner]
   type = Transient
-  num_steps = 700
-  dt = .007143
-  dtmin = .007143
+  num_steps = 100
+  dt = .1
+  dtmin = .1
 
   petsc_options_iname = '-pc_type -pc_hypre_type -pc_hypre_boomeramg_max_iter' #USED FOR RE 100
   petsc_options_value = 'hypre boomeramg 6'
 
-  #petsc_options_iname = '-pc_type' 
+  #petsc_options_iname = '-pc_type'
   #petsc_options_value = 'lu'
 
   #petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels'

@@ -118,7 +118,7 @@
     #block = 'FLUID'
     block = 'SOLID'
     prop_names = 'rho mu'
-    prop_values = '1  0.0004'
+    prop_values = '1  0.002'
   [../]
 []
 
@@ -133,12 +133,17 @@
 [Executioner]
   type = Transient
   # scheme = bdf2
-  num_steps = 500
-  dt = .01
-  dtmin = .01
+  num_steps = 100
+  dt = .1
+  dtmin = .1
 
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
+
+  #petsc_options_iname = ' -pc_type -sub_pc_type -pc_asm_overlap -ksp_gmres_restart -sub_pc_factor_shift_type'
+  #petsc_options_value = ' asm lu 2 200 NONZERO'
+
+
 
   #petsc_options_iname = '-ksp_type -ksp_gmres_restart -pc_type -sub_pc_type -snes_max_it -sub_pc_factor_shift_type -pc_asm_overlap -snes_atol -snes_rtol '
   #petsc_options_value = 'gmres 30 asm lu 100 NONZERO 2 1E-14 1E-12'

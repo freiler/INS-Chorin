@@ -2,7 +2,7 @@
   second_order = true
   [fmg]
     type = FileMeshGenerator
-    file = AirfoilMeshes/Re100CoarseMesh.exo
+    file = Mesh4.exo
   []
 []
 
@@ -112,8 +112,8 @@
 [Materials]
   [./const]
     type = ADGenericConstantMaterial
-    #block = 'SOLID'
-    block = 'FLUID'
+    block = 'SOLID'
+    #block = 'FLUID'
     prop_names = 'rho mu'
     prop_values = '1  0.002'
   [../]
